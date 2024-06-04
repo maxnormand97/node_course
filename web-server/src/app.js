@@ -68,6 +68,6 @@ app.get('*', (req, res) => {
 
 // starts the server
 // might want to change this cause of rails...
-app.listen(3000, () => {
+app.listen(8000, () => {
     console.log('starting server')
 })
