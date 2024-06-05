@@ -4,8 +4,12 @@
 const path = require('path')
 const express = require('express')
 const hbs = require('hbs')
+const geocode = require('./utils/geocode.js')
+const forecast = require('./utils/forecast.js')
 // store it in app var
 const app = express()
+// ensure we set port var and get from ENV vars to run code on server
+const port = process.env.PORT || 8000
 // the core node module for helping make paths to serve assets is path
 // Paths for express config
 const publicDirPath = path.join(__dirname, '../public')
@@ -47,12 +51,45 @@ app.get('/help', (req, res) => {
 
 // sets up get route and what request to send back
 app.get('/weather', (req, res) => {
-    res.send(
-        {
-            forecast: 'bad',
-            location: 'somewhere'
+    if (!req.query.address) {
+        return res.send({
+            error: 'No Address provided'
+        })
+    }
+    // set default param to avoid issues with destructuring
+    geocode(req.query.address, (err, {latitude, longitude, location} = {}) => {
+        if (err){
+            return res.send({
+                error: err
+            })
         }
-    )
+        forecast(latitude, longitude, (err, forecastData) => {
+            if (err) {
+                return res.send({
+                    error: err
+                })
+            } else {
+                res.send(
+                    {
+                        forecast: forecastData,
+                        location: location,
+                        address: req.query.address
+                    }
+                )
+            }
+        })
+    })
+})
+
+app.get('/products', (req, res) => {
+    console.log(req.query)
+    if (!req.query.search) {
+        return res.send('No products')
+    }
+
+    res.send({
+        products: ['productOne']
+    })
 })
 // specific 404 pages for things like not found records
 app.get('/help/*', (req, res) => {
@@ -68,6 +105,6 @@ app.get('*', (req, res) => {
 
 // starts the server
 // might want to change this cause of rails...
-app.listen(8000, () => {
+app.listen(port, () => {
     console.log('starting server')
 })
