@@ -2,6 +2,7 @@ const express = require('express')
 require('../db/mongoose')
 const User = require('../models/user')
 const router = new express.Router()
+const auth = require('../middleware/auth')
 
 // POST '/users'
 router.post('/users', async (req, res) => {
@@ -9,20 +10,30 @@ router.post('/users', async (req, res) => {
     // has to do this before anything
     try {
         await user.save()
-        res.status(201).send(user)
+        const token = await user.generateAuthToken()
+        res.status(201).send({user, token})
     } catch (e) {
         res.status(400).send(e)
     }
 })
 
-// get all users
-router.get('/users', async (req, res) => {
+// LOGIN users
+router.post('/users/login', async (req, res) => {
     try {
-        const users = await User.find({})
-        res.send(users)
+        // can define custom methods for the user we would do this in the mongoose model
+        const user = await User.findByCredentials(req.body.email, req.body.password)
+        // this will be an instance method
+        const token = await user.generateAuthToken()
+        res.send({user, token})
     } catch (e) {
-        res.status(500).send()
+        res.status(400).send()
     }
+})
+
+// get user profile
+// to use middleware just pass in your middleware function
+router.get('/users/me', auth, async (req, res) => {
+    res.send(req.user)
 })
 
 // GET :id
@@ -53,8 +64,14 @@ router.patch('/users/:id', async (req, res) => {
 
     const _id = req.params.id
     try {
+        const user = await User.findById(_id)
+        // loop through the update keys and then update according to the params
+        updates.forEach((update) => {
+            user[update] = req.body[update]
+        })
+        await user.save()
         // updates from params and returns the new user and runs validations
-        const user = await User.findByIdAndUpdate(_id, req.body, {new: true, runValidators: true})
+        // const user = await User.findByIdAndUpdate(_id, req.body, {new: true, runValidators: true})
         if(!user) {
             return res.status(404).send()
         }

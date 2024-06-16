@@ -1,6 +1,6 @@
 const express = require('express')
 require('../db/mongoose')
-const Task = require('../models/user')
+const Task = require('../models/task')
 const router = new express.Router()
 
 // GET '/tasks'
@@ -40,8 +40,11 @@ router.patch('/tasks/:id', async (req, res) => {
 
     const _id = req.params.id
     try {
-        // updates from params and returns the new user and runs validations
-        const task = await Task.findByIdAndUpdate(_id, req.body, {new: true, runValidators: true})
+        const task = await Task.findById(_id)
+
+        updates.forEach((update) => task[update] = req.body[update])
+        await task.save()
+
         if(!task) {
             return res.status(404).send()
         }
