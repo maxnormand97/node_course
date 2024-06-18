@@ -32,11 +32,30 @@ app.use(express.json())
 app.use(userRouter)
 app.use(taskRouter)
 
-//
-
 app.listen(port, () => {
     console.log('Running application')
 })
+
+// const Task = require('./models/task')
+// const User = require('./models/user')
+
+// TODO: not working need to debug
+// const main = async () => {
+//     const task = await Task.findById('6670632cbfa7f99eae1044c7')
+//     await task.populate('owner') // get access to the user instance
+//     console.log(task.owner)
+// }
+
+// main()
+// TODO: not working
+// const main = async () => {
+//     const user = await User.findById('6670671878e47a1f437860e1')
+//     console.log(user)
+//     await user.populate('tasks')
+//     console.log(user.tasks)
+// }
+
+// main()
 
 // BCRYPT example
 // const bcrypt = require('bcryptjs')

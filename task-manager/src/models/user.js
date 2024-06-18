@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const Task = require('./task')
 
 // you have to use a schema to make use of middleware functions (callbacks)
 const userSchema = new mongoose.Schema({
@@ -53,6 +54,13 @@ const userSchema = new mongoose.Schema({
         }
     }]
 })
+// set up a virtual model reference
+// how to do a has_many relationship
+userSchema.virtual('tasks', {
+    ref: 'Task',
+    localField: '_id',
+    foreignField: 'owner'
+})
 // with separate schemas we can attach methods with the following
 // this is how you make class method
 userSchema.statics.findByCredentials = async (email, password) => {
@@ -81,20 +89,35 @@ userSchema.methods.generateAuthToken = async function () {
     await user.save()
     return token
 }
+// If you use this under the hood it will serialize your data
+userSchema.methods.toJSON = function () {
+    const user = this
+    // create a dummy object of the user instance
+    const userObject = user.toObject()
+    // remove the things we don't want the client to see
+    delete userObject.password
+    delete userObject.token
+    return userObject
+}
 
 // pass a separate schema to take advantage of middleware
 
 // define callback event for before a model is saved
 userSchema.pre('save', async function (next) {
     const user = this
-
     // check if a PW has already been set
     if (user.isModified('password')) {
         user.password = await bcrypt.hash(user.password, 8)
     }
-
     // we use the next to let the function know when we are done
     // if we don't cause its async it will just hang
+    next()
+})
+
+// delete user task when user is removed
+userSchema.pre('remove', async function (next) {
+    const user = this
+    await Task.deleteMany({owner: user._id})
     next()
 })
 
