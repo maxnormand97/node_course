@@ -1,7 +1,4 @@
 node_modules
 package-lock.json
 package.json
-# ignore all env files
-.env*
-# ignore everything in task-manager/config
-task-manager/config/*
+**/config/

@@ -1,21 +1,8 @@
-const express = require('express')
-// load other files when the server starts
-require('./db/mongoose')
-const userRouter = require('./routers/user')
-const taskRouter = require('./routers/task')
-
-const app = express()
+const app = require('./app')
 const port = process.env.PORT || 8000
-
-app.use(express.json())
-app.use(userRouter)
-app.use(taskRouter)
-
 app.listen(port, () => {
     console.log('Running application')
 })
-
-
 
 // MIDDLEWARE
 // to use middleware use .use() function and pass in a callback
