@@ -1,3 +1,4 @@
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 const express = require('express')
 // load other files when the server starts
 require('./db/mongoose')
