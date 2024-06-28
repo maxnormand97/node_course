@@ -1,4 +1,5 @@
+// NOTE: to set up monogoose on local env see the following...
+// https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-os-x/#std-label-install-mdb-community-macos
 const mongoose = require('mongoose')
-const password = encodeURIComponent('RG1oUkxSZGd5');
-const uri = `mongodb+srv://Cluster90814:${password}@cluster90814.jh7ruul.mongodb.net/task-manager-api?retryWrites=true&w=majority&appName=Cluster90814`
+const uri = 'mongodb://localhost:27017';
 mongoose.connect(uri);

@@ -1,6 +1,19 @@
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const password = encodeURIComponent('RG1oUkxSZGd5');
-const uri = `mongodb+srv://Cluster90814:${password}@cluster90814.jh7ruul.mongodb.net/?retryWrites=true&w=majority&appName=Cluster90814`
+// TODO: export and use env vars
+// NOTE: these are your prod PW's!
+const uri = 'mongodb://localhost:27017';
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+client.connect(err => {
+  if (err) {
+    console.error('Error connecting to MongoDB:', err);
+    return;
+  }
+  console.log('Connected to MongoDB');
+  const collection = client.db('test').collection('documents');
+  // perform actions on the collection object
+  client.close();
+});
 // const ObjectID = mongodb.ObjectID
 
 // const { MongoClient, ObjectID } = require()
@@ -8,13 +21,13 @@ const uri = `mongodb+srv://Cluster90814:${password}@cluster90814.jh7ruul.mongodb
 // console.log(id)
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
+// const client = new MongoClient(uri, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   }
+// });
 
 // init call to correct db
 // const db = client.db('task-manager');
@@ -117,12 +130,12 @@ const client = new MongoClient(uri, {
 
 // const client = new MongoClient(uri);
 // only works with Aysnc functions!
-async function run() {
-  try {
-    // Get the database and collection on which to run the operation
-    const database = client.db("task-manager");
-    const users = database.collection("users");
-    const tasks = database.collection("tasks");
+// async function run() {
+//   try {
+//     // Get the database and collection on which to run the operation
+//     const database = client.db("task-manager");
+//     const users = database.collection("users");
+//     const tasks = database.collection("tasks");
 
     // Queries ===============
     // Set up basic query
@@ -183,25 +196,25 @@ async function run() {
     //   });
     // DELETING
     // delete one
-    database.collection('users').deleteOne({
-      email: "foo@example.com"
-    }).then((result) => {
-      console.log(result)
-    }).catch((error) => {
-      console.log(error)
-    })
-    // delete many
-    // database.collection('users').deleteMany({
-    //   email: "john@example.com"
-    // }).then((result) => {
-    //   console.log(result)
-    // }).catch((error) => {
-    //   console.log(error)
-    // })
-    // "foo@example.com"
+//     database.collection('users').deleteOne({
+//       email: "foo@example.com"
+//     }).then((result) => {
+//       console.log(result)
+//     }).catch((error) => {
+//       console.log(error)
+//     })
+//     // delete many
+//     // database.collection('users').deleteMany({
+//     //   email: "john@example.com"
+//     // }).then((result) => {
+//     //   console.log(result)
+//     // }).catch((error) => {
+//     //   console.log(error)
+//     // })
+//     // "foo@example.com"
 
-  } finally {
-    await client.close();
-  }
-}
-run().catch(console.dir);
+//   } finally {
+//     await client.close();
+//   }
+// }
+// run().catch(console.dir);

@@ -3,6 +3,8 @@ require('../db/mongoose')
 const User = require('../models/user')
 const router = new express.Router()
 const auth = require('../middleware/auth')
+const multer = require('multer')
+const sharp = require('sharp')
 
 // POST '/users'
 router.post('/users', async (req, res) => {
@@ -106,6 +108,63 @@ router.delete('/users/me', auth, async (req, res) => {
         res.send(req.user)
     } catch (e) {
         res.status(500).send()
+    }
+})
+
+const upload = multer({
+    // config goes here
+    // dest: 'images', don't enable this if you are saving the file against a model
+    limits: {
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        // you can use regex to specify what files to include and prohibit
+        if(!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+            return cb(new Error('Please use jpg'))
+        }
+        cb(undefined, true)
+    }
+})
+
+
+// POST uploads
+// you can have as many middleware functions as you want
+router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
+    // use sharp to convert things
+    const buffer = await sharp(req.file.buffer).resize({width: 200, height: 200}).png().toBuffer()
+    // how to get access to the file binary passed in
+    req.user.avatar = buffer
+    await req.user.save()
+    res.status(200).send()
+}, (error, req, res, next) => {
+    res.status(400).send({error: error.message})
+})
+
+// delete uploads
+router.delete('/users/me/avatar', auth, async (req, res) => {
+    req.user.avatar = undefined
+    try {
+        await req.user.save()
+        res.send(req.user)
+    } catch (e) {
+        res.status(400).send(e)
+    }
+})
+
+// GET avatar
+// TODO: need to test this
+router.get('/users/:id/avatar', async (req, res) => {
+    try {
+        const user = await User.findById(req.params._id)
+        if (!user || !user.avatar) {
+            throw new Error()
+        }
+        // need to tell the requestor the type of data it is
+        // you can do that by setting the response header
+        res.set('Content-Type', 'image/png')
+        res.send(user.avatar)
+    } catch (e) {
+        res.status(404).send()
     }
 })
 

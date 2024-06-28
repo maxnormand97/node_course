@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const Task = require('./task')
 
 // you have to use a schema to make use of middleware functions (callbacks)
+// to enable timestamps you have to update the schema options
 const userSchema = new mongoose.Schema({
     // set up attributes as objects
     name: {
@@ -46,6 +47,10 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    // field for image storage
+    avatar: {
+        type: Buffer
+    },
     // you'll want to save user tokens, one for each device they could have
     tokens: [{
         token: {
@@ -53,6 +58,9 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     }]
+}, {
+    // needs to go outside of the other object properties
+    timestamps: true
 })
 // set up a virtual model reference
 // how to do a has_many relationship
@@ -97,6 +105,7 @@ userSchema.methods.toJSON = function () {
     // remove the things we don't want the client to see
     delete userObject.password
     delete userObject.token
+    delete userObject.avatar // don't include things that are heavy in your responses
     return userObject
 }
 

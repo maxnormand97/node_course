@@ -6,6 +6,18 @@ const taskRouter = require('./routers/task')
 
 const app = express()
 const port = process.env.PORT || 8000
+
+app.use(express.json())
+app.use(userRouter)
+app.use(taskRouter)
+
+app.listen(port, () => {
+    console.log('Running application')
+})
+
+
+
+// MIDDLEWARE
 // to use middleware use .use() function and pass in a callback
 // the middleware function needs to finish, if you don't
 // define next it will hang
@@ -27,14 +39,6 @@ const port = process.env.PORT || 8000
 //         next()
 //     }
 // })
-
-app.use(express.json())
-app.use(userRouter)
-app.use(taskRouter)
-
-app.listen(port, () => {
-    console.log('Running application')
-})
 
 // const Task = require('./models/task')
 // const User = require('./models/user')
@@ -88,3 +92,27 @@ app.listen(port, () => {
 // }
 
 // myFunction()
+
+// FIlE UPLOADS
+// const multer = require('multer')
+// const upload = multer({
+//     // config goes here
+//     dest: 'images',
+//     // set limits like size
+//     limits: {
+//         fileSize: 5000000
+//     },
+//     // inbuilt filtering function
+//     fileFilter(req, file, cb) {
+//         // you can use regex to specify what files to include and prohibit
+//         if(!file.originalname.match(/\.(doc|docx)$/)) {
+//             return cb(new Error('Please use jpg'))
+//         }
+
+//         cb(undefined, true)
+//     }
+// })
+// // put in the multer middleware
+// app.post('/upload', upload.single('upload'), (req, res) => {
+//     res.send()
+// })

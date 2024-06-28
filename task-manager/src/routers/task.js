@@ -5,9 +5,42 @@ const auth = require('../middleware/auth')
 const router = new express.Router()
 
 // GET '/tasks'
+// to support pagination use limit or skip
+// /tasks?limit=10&skip=20
+// to use sort '/tasks?sortBy={params}'
 router.get('/tasks', auth, async (req, res) => {
+    let tasks = []
+    // manipulate what comes back to the user by
+    // looking at the query string
+    // FOR SORTING
+    // const sort = {};
+    // if (req.query.sortBy) {
+    //     const parts = req.query.sortBy.split(':');
+    //     sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
+    // }
+
+    // tasks = await Task.find({
+    //     owner: req.user._id,
+    //     completed: isCompleted
+    // })
+    // .limit(parseInt(req.query.limit))
+    // .skip(parseInt(req.query.skip))
+    // .sort(sort);
+    if (req.query.completed) {
+        const isCompleted = req.query.completed.toLowerCase() === 'true';
+        // const tasks = await Task.find(match).limit(1).skip(1)
+        // TODO: try to figure out how to use sort in this
+        tasks = await Task.find({
+            owner: req.user._id,
+            completed: isCompleted
+        }).limit(parseInt(req.query.limit)).skip(parseInt(req.query.skip))
+    } else {
+        tasks = await Task.find({
+            owner: req.user._id
+        })
+    }
+
     try {
-        const tasks = await Task.find({owner: req.user._id})
         res.send(tasks)
     } catch (e) {
         res.status(500).send()
