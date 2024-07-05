@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "express": "^4.19.2",
+    "request": "^2.88.0"
+  },
+  "name": "node_course",
+  "description": "Saving the learnings of following the Udemy course by Andrew Mead for nodeJS https://www.udemy.com/course/the-complete-nodejs-developer-course-2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxnormand97/node_course.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maxnormand97/node_course/issues"
+  },
+  "homepage": "https://github.com/maxnormand97/node_course#readme"
+}
